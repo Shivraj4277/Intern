@@ -1,0 +1,144 @@
+-- 1. SELECT – Display all records
+SELECT *
+FROM sales;
+
+
+-- 2. WHERE – Find orders above 10,000
+SELECT
+    order_id,
+    customer_name,
+    total_price
+FROM sales
+WHERE total_price > 10000;
+
+
+-- 3. GROUP BY + SUM – Total sales by category
+SELECT
+    category,
+    SUM(total_price) AS total_sales
+FROM sales
+GROUP BY category
+ORDER BY total_sales DESC;
+
+
+-- 4. ORDER BY – Highest-value orders
+SELECT
+    order_id,
+    customer_name,
+    total_price
+FROM sales
+ORDER BY total_price DESC;
+
+
+-- 5. COUNT – Total number of orders
+SELECT
+    COUNT(*) AS total_orders
+FROM sales;
+
+
+-- 6. SUM – Total revenue
+SELECT
+    SUM(total_price) AS total_revenue
+FROM sales;
+
+
+-- 7. AVG – Average Order Value
+SELECT
+    AVG(total_price) AS average_order_value
+FROM sales;
+
+
+-- 8. TOP 10 CUSTOMERS
+SELECT
+    customer_name,
+    SUM(total_price) AS total_spent
+FROM sales
+GROUP BY customer_name
+ORDER BY total_spent DESC
+LIMIT 10;
+
+
+-- 9. AVERAGE ORDER VALUE BY CATEGORY
+SELECT
+    category,
+    AVG(total_price) AS average_order_value
+FROM sales
+GROUP BY category
+ORDER BY average_order_value DESC;
+
+
+-- 10. NUMBER OF ORDERS PER CUSTOMER
+SELECT
+    customer_name,
+    COUNT(order_id) AS order_count
+FROM sales
+GROUP BY customer_name
+ORDER BY order_count DESC;
+
+
+-- 11. CASE STATEMENT – CLASSIFY ORDERS
+SELECT
+    order_id,
+    customer_name,
+    total_price,
+    CASE
+        WHEN total_price >= 20000 THEN 'High Value'
+        WHEN total_price >= 10000 THEN 'Medium Value'
+        ELSE 'Low Value'
+    END AS order_segment
+FROM sales
+ORDER BY total_price DESC;
+
+
+-- 12. SUBQUERY – ORDERS ABOVE AVERAGE
+SELECT
+    order_id,
+    customer_name,
+    total_price
+FROM sales
+WHERE total_price > (
+    SELECT AVG(total_price)
+    FROM sales
+)
+ORDER BY total_price DESC;
+
+
+-- 13. SUBQUERY – CUSTOMERS ABOVE AVERAGE SPENDING
+SELECT
+    customer_name,
+    SUM(total_price) AS total_spent
+FROM sales
+GROUP BY customer_name
+HAVING SUM(total_price) > (
+    SELECT AVG(customer_total)
+    FROM (
+        SELECT
+            customer_name,
+            SUM(total_price) AS customer_total
+        FROM sales
+        GROUP BY customer_name
+    ) AS customer_sales
+)
+ORDER BY total_spent DESC;
+
+
+-- 14. JOIN – CUSTOMER AND SALES INFORMATION
+SELECT
+    c.customer_name,
+    s.order_id,
+    s.total_price
+FROM customers c
+JOIN sales s
+    ON c.customer_name = s.customer_name;
+
+
+-- 15. REGION-WISE SALES ANALYSIS
+SELECT
+    region,
+    SUM(total_price) AS total_sales,
+    AVG(total_price) AS average_order_value,
+    COUNT(order_id) AS order_count
+FROM sales
+GROUP BY region
+ORDER BY total_sales DESC;
+
